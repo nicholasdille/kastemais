@@ -68,12 +68,57 @@ cat app/nginx/deployment.yaml | docker run -i kastemais yq w - metadata.name ${N
 
 TODO: How to filter?
 
-TODO: Perhaps merge into one YAML document?
+TODO: Merge into one YAML document?
 
 ```yaml
-apiVersion: v1beta3                                                                              
-kind: List                                                                                       
+apiVersion: v1beta3
+kind: List
 items:
 - ...
 - ...
+```
+
+TODO: How to merge?
+
+This is also valid:
+
+```yaml
+apiVersion: v1
+kind: List
+items:
+-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: nginx
+  data:
+    index.html: |
+      <html>
+      <head><title>Test</title></head>
+      <body><h1>Test</h1>Test</body>
+      </html>
+-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: nginx
+  spec:
+    selector:
+      app: nginx
+    ports:
+      - protocol: TCP
+        port: 80
+        targetPort: 80
+
+```
+
+Select document based on `kind`:
+
+```yaml
+---
+- op: add
+  path: /items/kind=Deployment/spec/template/spec/containers/-
+  value:
+    name: telegraf
+    image: telegraf
 ```
