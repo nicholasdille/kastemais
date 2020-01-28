@@ -1,0 +1,15 @@
+- op: add
+  path: /metadata/namespace
+  value: ${SERVICE_NAME}-qa
+- op: replace
+  path: /spec/template/spec/containers/name=nginx/image
+  value: nginx:${IMAGE_TAG}
+- op: add
+  path: /spec/template/spec/containers/name=nginx/resources
+  value:
+    requests:
+      cpu: 500m
+      memory: 500Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi

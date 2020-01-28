@@ -1,0 +1,10 @@
+- op: add
+  path: spec.affinity.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution[-]
+  value:
+    weight: 1
+    preference:
+      matchExpressions:
+      - key: another-node-label-key
+        operator: In
+        values:
+        - another-node-label-value

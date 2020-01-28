@@ -1,0 +1,7 @@
+- op: add
+  path: /metadata/annotations
+  value:
+    ci-system: gitlab
+    ci-pipeline: "65432"
+    ci-job: "1234"
+    ci-url: https://gitlab.haufedev.systems/DevInfra/artifactory/pipelines/65432

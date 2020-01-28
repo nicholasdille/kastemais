@@ -1,0 +1,13 @@
+- op: add
+  path: spec.template.spec.tolerations[-]
+  value:
+    key: "haufedev.systems/node-type"
+    operator: "Equal"
+    value: "loadbalancer"
+    effect: "NoSchedule"
+- op: add
+  path: spec.template.spec.tolerations[-]
+    key: "haufedev.systems/node-type"
+    operator: "Equal"
+    value: "loadbalancer"
+    effect: "NoExecute"
