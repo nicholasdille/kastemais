@@ -66,4 +66,14 @@ cat app/nginx/deployment.yaml | docker run -i kastemais yq w - metadata.name ${N
 
 ### Filter documents
 
-TODO
+TODO: How to filter?
+
+TODO: Perhaps merge into one YAML document?
+
+```yaml
+apiVersion: v1beta3                                                                              
+kind: List                                                                                       
+items:
+- ...
+- ...
+```
