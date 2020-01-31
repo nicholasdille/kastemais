@@ -1,5 +1,5 @@
-FROM golang:1.12-alpine AS yaml-patch
-RUN apk add --update-cache --no-cache --virtual .build-dependencies git \
+FROM golang:1.13-alpine AS yaml-patch
+RUN apk add --update-cache git \
  && go get -u github.com/krishicks/yaml-patch \
  && cd /go/src/github.com/krishicks/yaml-patch/cmd/yaml-patch \
  && go get . \

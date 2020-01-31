@@ -4,6 +4,8 @@ Templating similar to kustomize but with multiple overlays
 
 ## Install prerequisites
 
+This requires [`yq`](https://github.com/mikefarah/yq) and [`yaml-patch`](https://github.com/krishicks/yaml-patch)
+
 ```bash
 docker build --tag kastemais .
 ```
@@ -68,7 +70,7 @@ cat app/nginx/deployment.yaml | docker run -i kastemais yq w - metadata.name ${N
 
 TODO: How to filter?
 
-Merge into one YAML document in the form:
+Merge into one YAML document in the form (see `merge_documents()` in `functions.sh`):
 
 ```yaml
 apiVersion: v1
@@ -76,56 +78,6 @@ kind: List
 items:
 - ...
 - ...
-```
-
-Select document based on `kind`:
-
-```yaml
----
-- op: add
-  path: /items/kind=Deployment/spec/template/spec/containers/-
-  value:
-    name: telegraf
-    image: telegraf
-```
-
-How to merge:
-
-```bash
-$ cat list.yaml
-apiVersion: v1
-kind: List
-items: []
-$ cat patch-add.yaml
-- op: add
-  path: /items/-
-$ cat app/nginx/service.yaml | yq3 prefix - [+].value | yq3 merge - patch-add.yaml > patch-service.yaml
-$ cat app/nginx/configmap.yaml | yq3 prefix - [+].value | yq3 merge - patch-add.yaml > patch-configmap.yaml
-$ cat list.yaml | yaml-patch -o patch-service.yaml | yaml-patch -o patch-configmap.yaml
-apiVersion: v1
-items:
-- apiVersion: v1
-  kind: Service
-  metadata:
-    name: nginx
-  spec:
-    ports:
-    - port: 80
-      protocol: TCP
-      targetPort: 80
-    selector:
-      app: nginx
-- apiVersion: v1
-  data:
-    index.html: |
-      <html>
-      <head><title>Test</title></head>
-      <body><h1>Test</h1>Test</body>
-      </html>
-  kind: ConfigMap
-  metadata:
-    name: nginx
-kind: List
 ```
 
 This is also valid:
@@ -135,32 +87,12 @@ apiVersion: v1
 kind: List
 items:
 -
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: nginx
-  data:
-    index.html: |
-      <html>
-      <head><title>Test</title></head>
-      <body><h1>Test</h1>Test</body>
-      </html>
+  ...
 -
-  apiVersion: v1
-  kind: Service
-  metadata:
-    name: nginx
-  spec:
-    selector:
-      app: nginx
-    ports:
-      - protocol: TCP
-        port: 80
-        targetPort: 80
-
+  ...
 ```
 
-## Handling multiple documents
+### Handling multiple documents
 
 `yq` can only operate on numerically indexed documents in a file:
 
@@ -171,11 +103,7 @@ Deployment
 Service
 ```
 
-`yq` can also merge multiple documents with a file when in the correct order (see ):
-
-```bash
-cat app/nginx/*.yaml | yq3 -d'*' prefix - [+].value | yq3 -d'*' merge - patch-add.yaml
-```
+`yq` can also merge multiple documents within a file when in the correct order (see `merge_documents()` in `functions.sh`)
 
 Workaround: Split documents into separate files
 
@@ -184,3 +112,17 @@ $ cat app/nginx/*.yaml | csplit --prefix=document- --suffix-format=%02d.yaml --e
 $ ls -l document-*.yaml
 document-00.yaml  document-01.yaml  document-02.yaml
 ```
+
+### Package definition
+
+TODO: Description which application from `/app` and which overlays from `/overlay` to apply.
+
+### Variable substitution
+
+TODO: Is this in scope? If so...
+
+- Support substitution from environment variables
+- Explicit list of variables to substitute
+- Support `.env` file?
+
+Workaround: `envsubst`
