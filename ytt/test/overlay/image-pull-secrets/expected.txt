@@ -1,5 +1,3 @@
-#@ load("@ytt:data", "data")
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,10 +5,12 @@ metadata:
 spec:
   replicas: 1
   selector:
-    matchLabels: #@ data.values.matchLabels
+    matchLabels:
+      app: nginx
   template:
     metadata:
-      labels: #@ data.values.matchLabels
+      labels:
+        app: nginx
     spec:
       volumes:
       - name: data
@@ -18,9 +18,23 @@ spec:
           name: nginx
       containers:
       - name: main
-        image: #@ "nginx:{}".format(data.values.tag)
+        image: nginx
         ports:
-        - containerPort: #@ data.values.port
+        - containerPort: 80
         volumeMounts:
         - name: data
           mountPath: /var/share/nginx/html
+      imagePullSecrets:
+      - name: unknown
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test2
+spec:
+  selector:
+    app: test2
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
