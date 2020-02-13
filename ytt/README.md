@@ -21,3 +21,7 @@ Adding an overlay:
 ```bash
 ytt -f app/nginx -f overlay/namespace -v stage=nginx-qa
 ```
+
+## Testing
+
+XXX `run.sh`
